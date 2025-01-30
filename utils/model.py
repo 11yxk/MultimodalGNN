@@ -60,56 +60,7 @@ class BERTModel(nn.Module):
         return embed
 
 
-# class BERTModel(nn.Module):
-#     def __init__(self, bert_type, project_dim):
-#         super(BERTModel, self).__init__()
-#
-#         # 加载 BERT 模型并定义投影层
-#         self.model = AutoModel.from_pretrained(bert_type, output_hidden_states=True, trust_remote_code=True)
-#         self.project_head = nn.Sequential(
-#             nn.Linear(768, project_dim),
-#             nn.LayerNorm(project_dim),
-#             nn.GELU(),
-#             nn.Linear(project_dim, project_dim)
-#         )
-#
-#         # 冻结 BERT 参数
-#         for param in self.model.parameters():
-#             param.requires_grad = False
-#
-#     def forward(self, sen_token, sen_mask, input_ids, attention_mask):
-#
-#
-#         sen_output = self.model(input_ids=sen_token, attention_mask=sen_mask)
-#         # print(111111111111)
-#         # print(sen_output.last_hidden_state.shape)
-#         sen_embed = sen_output.last_hidden_state[:, 0, :]
-#
-#
-#         # 获取输入的批次大小和短语数量
-#         batch_size, max_phrases, max_length = input_ids.size()
-#
-#         # 将输入调整为 (batch_size * max_phrases, max_length)
-#         input_ids = input_ids.view(-1, max_length)
-#         attention_mask = attention_mask.view(-1, max_length)
-#
-#
-#         output = self.model(input_ids=input_ids, attention_mask=attention_mask)
-#
-#         embed = output.last_hidden_state[:, 0, :]
-#         embedding_dim = embed.size(-1)
-#         batch_embeddings = embed.view(batch_size, max_phrases, embedding_dim)
-#         # 进行维度变换并池化
-#
-#
-#         batch_embeddings_fusion = torch.cat([sen_embed.unsqueeze(dim =1), batch_embeddings], dim=1)
-#
-#         # 将嵌入通过投影层
-#         embed = self.project_head(batch_embeddings_fusion)  # (batch_size * max_phrases, project_dim)
-#
-#
-#
-#         return embed
+
 class KNNRegressionNet(nn.Module):
     def __init__(self, patch_size, channels):
         super(KNNRegressionNet, self).__init__()
@@ -129,49 +80,6 @@ class KNNRegressionNet(nn.Module):
         return torch.sigmoid(x)
 
 
-# class VisionModel(nn.Module):
-#     def __init__(self):
-#         super(VisionModel, self).__init__()
-#
-#         self.encoder = pvig_ti_224_gelu()
-#         checkpoint = torch.load('/mnt/data1/RIS/LanGuideMedSeg-MICCAI2023-main-knnnet/pvig_ti_78.5.pth.tar')
-#         self.encoder.load_state_dict(checkpoint)
-#
-#
-#         print('===========================')
-#         print('using VIG')
-#         print('===========================')
-#
-#     def forward(self, x):
-#         # 提取每个层级的特征
-#         features = self.encoder(x)
-#
-#         return features
-
-
-# class VisionModel(nn.Module):
-#     def __init__(self):
-#         super(VisionModel, self).__init__()
-#
-#         self.encoder = pvig_ti_224_gelu()
-#
-#         pretrained_dict = torch.load('/mnt/data1/RIS/LanGuideMedSeg-MICCAI2023-main-knnnet/pvig_ti_78.5.pth.tar')
-#         new_state_dict = self.encoder.state_dict()
-#         # 过滤出名字匹配的参数
-#         matched_dict = {k: v for k, v in pretrained_dict.items() if k in new_state_dict}
-#         # 更新新网络的 state_dict
-#         new_state_dict.update(matched_dict)
-#         # 加载更新后的 state_dict
-#         self.encoder.load_state_dict(new_state_dict, strict=False)
-#
-#         print('===========================')
-#         print('using VIG')
-#
-#     def forward(self, x):
-#         # 提取每个层级的特征
-#         features = self.encoder(x)
-#
-#         return features
 
 
 class VisionModel(nn.Module):
