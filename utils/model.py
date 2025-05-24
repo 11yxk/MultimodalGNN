@@ -15,7 +15,7 @@ class BERTModel(nn.Module):
     def __init__(self, bert_type, project_dim):
         super(BERTModel, self).__init__()
 
-        # 加载 BERT 模型并定义投影层
+
         self.model = AutoModel.from_pretrained(bert_type, output_hidden_states=True, trust_remote_code=True)
         self.project_head = nn.Sequential(
             nn.Linear(768, project_dim),
@@ -24,7 +24,7 @@ class BERTModel(nn.Module):
             nn.Linear(project_dim, project_dim)
         )
 
-        # 冻结 BERT 参数
+
         for param in self.model.parameters():
             param.requires_grad = False
 
@@ -35,10 +35,9 @@ class BERTModel(nn.Module):
         sen_embed = sen_output.last_hidden_state[:, 0, :]
 
 
-        # 获取输入的批次大小和短语数量
         batch_size, max_phrases, max_length = input_ids.size()
 
-        # 将输入调整为 (batch_size * max_phrases, max_length)
+   
         input_ids = input_ids.view(-1, max_length)
         attention_mask = attention_mask.view(-1, max_length)
 
@@ -48,11 +47,11 @@ class BERTModel(nn.Module):
         embed = output.last_hidden_state[:, 0, :]
         embedding_dim = embed.size(-1)
         batch_embeddings = embed.view(batch_size, max_phrases, embedding_dim)
-        # 进行维度变换并池化
+        
 
 
         batch_embeddings_fusion = torch.cat([sen_embed.unsqueeze(dim =1), batch_embeddings], dim=1)
-        # 将嵌入通过投影层
+       
         embed = self.project_head(batch_embeddings_fusion)  # (batch_size * max_phrases, project_dim)
 
 
@@ -64,19 +63,19 @@ class BERTModel(nn.Module):
 class KNNRegressionNet(nn.Module):
     def __init__(self, patch_size, channels):
         super(KNNRegressionNet, self).__init__()
-        # 定义一个简单的卷积层
+        
         self.conv1 = nn.Conv1d(in_channels=channels, out_channels=channels//4, kernel_size=3, padding=1)
         self.conv2 = nn.Conv1d(in_channels=channels//4, out_channels=channels//8, kernel_size=3, padding=1)
-        # 定义全连接层，将卷积层输出映射到最终的回归输出
+        
         self.fc = nn.Linear((channels//8) * patch_size, 1)
 
     def forward(self, x):
-        # 输入 x 的 shape 为 (batch_size, channels, patch_size)
+       
         x = x.permute(0, 2, 1)
-        x = F.relu(self.conv1(x))  # 卷积层并应用激活函数
-        x = F.relu(self.conv2(x))  # 卷积层并应用激活函数
-        x = x.view(x.size(0), -1)  # 展平
-        x = self.fc(x)  # 全连接层输出
+        x = F.relu(self.conv1(x)) 
+        x = F.relu(self.conv2(x))  
+        x = x.view(x.size(0), -1)  
+        x = self.fc(x)  
         return torch.sigmoid(x)
 
 
@@ -86,23 +85,21 @@ class VisionModel(nn.Module):
     def __init__(self):
         super(VisionModel, self).__init__()
 
-        # 初始化模型
+       
         self.encoder = pvig_ti_224_gelu()
 
-        # 加载预训练模型参数
+      
         pretrained_path = '/mnt/data1/RIS/LanGuideMedSeg-MICCAI2023-main-knnnet/pvig_ti_78.5.pth.tar'
         pretrained_dict = torch.load(pretrained_path)
 
-        # 当前模型的参数字典
+       
         current_state_dict = self.encoder.state_dict()
 
-        # 过滤出名字匹配的参数
         matched_dict = {k: v for k, v in pretrained_dict.items() if k in current_state_dict and v.size() == current_state_dict[k].size()}
 
-        # 更新当前模型的参数字典
         current_state_dict.update(matched_dict)
 
-        # 加载更新后的参数
+        
         self.encoder.load_state_dict(current_state_dict, strict=False)
 
         print('===========================')
@@ -112,7 +109,7 @@ class VisionModel(nn.Module):
         # print('Using VIG wo pretrain')
 
     def forward(self, x):
-        # 提取每个层级的特征
+        
         features = self.encoder(x)
         return features
 
