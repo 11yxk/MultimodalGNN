@@ -27,7 +27,7 @@ DATA:
   test_csv_path: /mnt/data1/RIS/QaTa-COV19/QaTa-COV19-v2_backup/Test_text_for_Covid19.xlsx
   test_root_path: /mnt/data1/RIS/QaTa-COV19/QaTa-COV19-v2_backup/Test
 
-#
+
 #DATA:
 #  train_csv_path: /mnt/data1/RIS/Train_text_MosMedData+ 1.xlsx
 #  train_root_path: /mnt/data1/RIS/MosMedData
@@ -39,5 +39,3 @@ DATA:
 #  test_root_path: /mnt/data1/RIS/MosMedData
 
 
-# CUDA_VISIBLE_DEVICES=1  python train.py
-# tsp python train.py
