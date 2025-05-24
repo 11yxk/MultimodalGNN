@@ -11,6 +11,11 @@ We borrow the data process from [LViT](https://github.com/HUANGLIZI/LViT).
 python train.py
 ```
 
+### Test
+```
+python evaluate.py
+```
+
 This repo is based on [TransUnet](https://github.com/Junelin2333/LanGuideMedSeg-MICCAI2023).
 
 Thanks original authors for their work!
