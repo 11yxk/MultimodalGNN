@@ -16,7 +16,7 @@ python train.py
 python evaluate.py
 ```
 
-This repo is based on [TransUnet](https://github.com/Junelin2333/LanGuideMedSeg-MICCAI2023).
+This repo is based on [LanGuideMedSeg-MICCAI2023](https://github.com/Junelin2333/LanGuideMedSeg-MICCAI2023).
 
 Thanks original authors for their work!
 
